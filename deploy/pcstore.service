@@ -1,0 +1,17 @@
+[Unit]
+Description=PC Store Django App
+After=network.target
+
+[Service]
+User=__DEPLOY_USER__
+Group=__DEPLOY_USER__
+WorkingDirectory=__APP_DIR__
+Environment="PATH=__APP_DIR__/venv/bin"
+ExecStart=__APP_DIR__/venv/bin/gunicorn \
+    --workers 3 \
+    --bind 127.0.0.1:8000 \
+    pcstore.wsgi:application
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
