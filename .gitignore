@@ -1,0 +1,85 @@
+# ── Python ──────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+.eggs/
+*.manifest
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ── Виртуальное окружение (на сервере создаётся заново) ─
+.venv/
+venv/
+env/
+ENV/
+
+# ── Секреты и локальная конфигурация ───────────────────
+# На сервере создайте .env вручную из .env.example
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# ── Django: локальная БД ───────────────────────────────
+# На сервере: migrate создаст свою базу (или используйте PostgreSQL)
+*.sqlite3
+*.sqlite3-journal
+*.db
+
+# ── Django: загруженные файлы ──────────────────────────
+# Фото сборок и галереи — загружаются через админку на сервере
+pcstore/media/
+
+# ── Django: collectstatic (генерируется на сервере) ─────
+pcstore/staticfiles/
+staticfiles/
+
+# ── Логи и кэш ─────────────────────────────────────────
+*.log
+logs/
+.cache/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+
+# ── IDE и редакторы ────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# ── OS ─────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ── Прочее ─────────────────────────────────────────────
+*.bak
+*.tmp
+*.temp
+
+.xlsx

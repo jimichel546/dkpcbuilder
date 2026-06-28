@@ -1,0 +1,233 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="container hero-content">
+        <h1>Сборка ПК <span>мечты</span> под ваши задачи</h1>
+        <p class="hero-subtitle">Игровые, рабочие и универсальные конфигурации с безупречным кабель-менеджментом, тестированием и настройкой каждой системы.</p>
+        <div class="hero-actions">
+            <a href="#quiz" class="btn btn-primary">Подобрать сборку</a>
+            <a href="{% url 'catalog' %}" class="btn btn-outline">Смотреть каталог</a>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="quiz">
+    <div class="container">
+        <div class="quiz-section"
+             id="quiz-app"
+             data-submit-url="{% url 'submit_order' %}"
+             {% if prefill_build %}data-prefill-build="{{ prefill_build.name }}" data-build-id="{{ prefill_build.pk }}"{% endif %}>
+            {% csrf_token %}
+
+            <h2>Подбор ПК за 3 шага</h2>
+            <p class="quiz-lead">Ответьте на несколько вопросов — мы подберём оптимальную конфигурацию</p>
+
+            <div class="quiz-progress">
+                <div class="quiz-progress-label">
+                    <span id="progress-text">Шаг 1 из 3</span>
+                    <span id="progress-percent">33%</span>
+                </div>
+                <div class="quiz-progress-track">
+                    <div class="quiz-progress-bar" id="progress-bar"></div>
+                </div>
+            </div>
+
+            <div class="quiz-error" id="quiz-error"></div>
+
+            <div class="quiz-step active" data-step="1">
+                <h3>Для чего вам нужен компьютер?</h3>
+                <div class="quiz-cards" id="purpose-cards">
+                    <label class="quiz-card" data-value="games">
+                        <input type="radio" name="purpose" value="games">
+                        <span class="quiz-card-icon">🎮</span>
+                        <span class="quiz-card-title">Игры</span>
+                        <span class="quiz-card-desc">AAA-тайтлы, стримы</span>
+                    </label>
+                    <label class="quiz-card" data-value="work">
+                        <input type="radio" name="purpose" value="work">
+                        <span class="quiz-card-icon">💼</span>
+                        <span class="quiz-card-title">Работа</span>
+                        <span class="quiz-card-desc">Офис, монтаж, код</span>
+                    </label>
+                    <label class="quiz-card" data-value="study">
+                        <input type="radio" name="purpose" value="study">
+                        <span class="quiz-card-icon">📚</span>
+                        <span class="quiz-card-title">Учёба</span>
+                        <span class="quiz-card-desc">Учёба, курсы, браузер</span>
+                    </label>
+                    <label class="quiz-card" data-value="all">
+                        <input type="radio" name="purpose" value="all">
+                        <span class="quiz-card-icon">⚡</span>
+                        <span class="quiz-card-title">Всё сразу</span>
+                        <span class="quiz-card-desc">Универсальный ПК</span>
+                    </label>
+                </div>
+                <div class="quiz-nav">
+                    <button type="button" class="quiz-btn quiz-btn-primary" id="btn-next-1" disabled>Далее</button>
+                </div>
+            </div>
+
+            <div class="quiz-step" data-step="2">
+                <h3>Какой у вас бюджет?</h3>
+                <div class="quiz-cards" id="budget-cards">
+                    <label class="quiz-card" data-value="up_to_500">
+                        <input type="radio" name="budget" value="up_to_500">
+                        <span class="quiz-card-icon">💰</span>
+                        <span class="quiz-card-title">До 500$</span>
+                        <span class="quiz-card-desc">Базовый уровень</span>
+                    </label>
+                    <label class="quiz-card" data-value="500_800">
+                        <input type="radio" name="budget" value="500_800">
+                        <span class="quiz-card-icon">💵</span>
+                        <span class="quiz-card-title">500–800$</span>
+                        <span class="quiz-card-desc">Средний сегмент</span>
+                    </label>
+                    <label class="quiz-card" data-value="800_1200">
+                        <input type="radio" name="budget" value="800_1200">
+                        <span class="quiz-card-icon">💎</span>
+                        <span class="quiz-card-title">800–1200$</span>
+                        <span class="quiz-card-desc">Высокий уровень</span>
+                    </label>
+                    <label class="quiz-card" data-value="1200_plus">
+                        <input type="radio" name="budget" value="1200_plus">
+                        <span class="quiz-card-icon">👑</span>
+                        <span class="quiz-card-title">От 1200$</span>
+                        <span class="quiz-card-desc">Топовая сборка</span>
+                    </label>
+                </div>
+                <div class="quiz-nav">
+                    <button type="button" class="quiz-btn quiz-btn-secondary" id="btn-back-2">Назад</button>
+                    <button type="button" class="quiz-btn quiz-btn-primary" id="btn-next-2" disabled>Далее</button>
+                </div>
+            </div>
+
+            <div class="quiz-step" data-step="3">
+                <h3>Ваша рекомендованная сборка</h3>
+                <div class="recommended-build" id="recommended-build">
+                    <div class="rec-label">Рекомендуем</div>
+                    <h4 id="rec-name">—</h4>
+                    <div class="rec-price" id="rec-price">—</div>
+                    <p id="rec-desc" style="color:var(--text-muted);font-size:.9rem;margin-bottom:.75rem"></p>
+                    <div class="rec-specs" id="rec-specs"></div>
+                </div>
+                <div class="quiz-fields">
+                    <div>
+                        <label for="quiz-name">Ваше имя</label>
+                        <input type="text" id="quiz-name" placeholder="Иван" autocomplete="name">
+                    </div>
+                    <div>
+                        <label for="quiz-contact">Телефон или Telegram</label>
+                        <input type="text" id="quiz-contact" placeholder="+375... или @username" autocomplete="tel">
+                    </div>
+                </div>
+                <div class="quiz-nav">
+                    <button type="button" class="quiz-btn quiz-btn-secondary" id="btn-back-3">Назад</button>
+                    <button type="button" class="quiz-btn quiz-btn-primary" id="btn-submit">Получить подборку</button>
+                </div>
+            </div>
+
+            <div class="quiz-step" data-step="success">
+                <div class="quiz-success">
+                    <div class="quiz-success-icon">✅</div>
+                    <h3>Заявка принята!</h3>
+                    <p>Мы свяжемся с вами в ближайшее время и уточним детали сборки.</p>
+                    <button type="button" class="quiz-btn quiz-btn-primary" id="btn-restart">Пройти квиз заново</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="process">
+    <div class="container">
+        <div class="section-header">
+            <h2>Этапы работы</h2>
+            <p>От первой консультации до готового ПК — каждый шаг под контролем</p>
+        </div>
+        <div class="process-grid">
+            <div class="process-card">
+                <span class="process-num">01</span>
+                <h3>Подбор и концепт</h3>
+                <p>Изучаем ваши задачи, подбираем идеальную связку комплектующих. Создаем визуальный концепт будущей сборки, подчеркивающий стиль, агрессию и боевую готовность системы.</p>
+            </div>
+            <div class="process-card">
+                <span class="process-num">02</span>
+                <h3>Сборка и укладка</h3>
+                <p>Наши инженеры приступают к работе. Безупречный кабель-менеджмент, правильное распределение термопасты и установка кастомных систем охлаждения. Внимание к каждой детали.</p>
+            </div>
+            <div class="process-card">
+                <span class="process-num">03</span>
+                <h3>Настройка и тесты</h3>
+                <p>Система проходит суровые испытания. Мы настраиваем BIOS, тайминги памяти, кривые вентиляторов и прогоняем ПК через самые тяжелые стресс-тесты для выявления узких мест.</p>
+            </div>
+            <div class="process-card">
+                <span class="process-num">04</span>
+                <h3>Финальный результат</h3>
+                <p>Вы получаете протестированный, мощный и тихий компьютер, готовый к любым играм прямо из коробки. Эстетика и бескомпромиссная производительность в едином целом.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="gallery">
+    <div class="container">
+        <div class="section-header">
+            <h2>Наши работы</h2>
+            <p>Каждая сборка — уникальный проект с продуманной эстетикой</p>
+        </div>
+        {% if photos %}
+        <div class="gallery-grid">
+            {% for photo in photos %}
+            <div class="gallery-item"
+                 data-lightbox="{{ photo.image.url }}"
+                 data-caption="{{ photo.caption }}">
+                <img src="{{ photo.image.url }}" alt="{{ photo.caption|default:'Фото сборки' }}">
+                {% if photo.caption %}
+                <div class="gallery-caption">{{ photo.caption }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-state">Фото работ скоро появятся</p>
+        {% endif %}
+    </div>
+</section>
+
+<section class="section" id="reviews">
+    <div class="container">
+        <div class="section-header">
+            <h2>Отзывы клиентов</h2>
+            <p>Что говорят о нас те, кто уже получил свой ПК</p>
+        </div>
+        {% if reviews %}
+        <div class="reviews-grid">
+            {% for review in reviews %}
+            <div class="review-card">
+                <div class="review-header">
+                    <span class="review-author">{{ review.author }}</span>
+                    <span class="review-date">{{ review.created_at|date:"d.m.Y" }}</span>
+                </div>
+                <div class="stars" aria-label="Оценка {{ review.rating }} из 5">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                    {% endfor %}
+                </div>
+                <p class="review-text">{{ review.text }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-state">Отзывы скоро появятся</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'shop/js/quiz.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}DK PC Builder{% endblock %} — Сборка ПК на заказ</title>
+    <link rel="stylesheet" href="{% static 'shop/css/main.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="{% url 'index' %}" class="logo">DK <span>PC</span> Builder</a>
+
+            <nav class="nav-desktop">
+                <ul>
+                    <li><a href="{% url 'index' %}">Главная</a></li>
+                    <li><a href="{% url 'catalog' %}">Каталог</a></li>
+                    <li><a href="{% url 'index' %}#process">Этапы</a></li>
+                    <li><a href="{% url 'index' %}#gallery">Фото</a></li>
+                    <li><a href="{% url 'index' %}#reviews">Отзывы</a></li>
+                    <li><a href="{% url 'index' %}#contacts">Контакты</a></li>
+                </ul>
+            </nav>
+
+            <div class="header-actions">
+                <a href="{% url 'index' %}#quiz" class="btn btn-primary btn-sm header-cta-desktop">Собрать ПК</a>
+                <button class="burger" aria-label="Меню" type="button">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+
+        <nav class="nav-mobile">
+            <ul>
+                <li><a href="{% url 'index' %}">Главная</a></li>
+                <li><a href="{% url 'catalog' %}">Каталог</a></li>
+                <li><a href="{% url 'index' %}#process">Этапы</a></li>
+                <li><a href="{% url 'index' %}#gallery">Фото</a></li>
+                <li><a href="{% url 'index' %}#reviews">Отзывы</a></li>
+                <li><a href="{% url 'index' %}#contacts">Контакты</a></li>
+                <li><a href="{% url 'index' %}#quiz" class="header-cta-mobile">Собрать ПК</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer" id="contacts">
+        <div class="container footer-grid">
+            <div class="footer-col">
+                <h4>DK PC Builder</h4>
+                <p>Сборка игровых и рабочих компьютеров на заказ. Безупречный кабель-менеджмент, тестирование и настройка каждой системы.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link" aria-label="Instagram">📷</a>
+                    <a href="#" class="social-link" aria-label="VK">VK</a>
+                    <a href="#" class="social-link" aria-label="Telegram">✈</a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h4>Навигация</h4>
+                <ul>
+                    <li><a href="{% url 'index' %}">Главная</a></li>
+                    <li><a href="{% url 'catalog' %}">Каталог</a></li>
+                    <li><a href="{% url 'index' %}#process">Этапы работы</a></li>
+                    <li><a href="{% url 'index' %}#gallery">Фото работ</a></li>
+                    <li><a href="{% url 'index' %}#reviews">Отзывы</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Контакты</h4>
+                <div class="contact-item">
+                    <span class="contact-icon">📞</span>
+                    <a href="tel:+375291234567">+375 (29) 123-45-67</a>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-icon">✈</span>
+                    <a href="https://t.me/dkpcbuilder">@dkpcbuilder</a>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-icon">✉</span>
+                    <a href="mailto:info@dkpcbuilder.by">info@dkpcbuilder.by</a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h4>Документы</h4>
+                <ul>
+                    <li><a href="{% url 'privacy' %}">Политика конфиденциальности</a></li>
+                    <li><a href="{% url 'terms' %}">Пользовательское соглашение</a></li>
+                    <li><a href="{% url 'cookies' %}">Политика cookies</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="container footer-bottom">
+            © 2025 DK PC Builder | Все права защищены
+        </div>
+    </footer>
+
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" type="button" aria-label="Закрыть">&times;</button>
+        <img src="" alt="">
+        <p class="lightbox-caption"></p>
+    </div>
+
+    <script src="{% static 'shop/js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

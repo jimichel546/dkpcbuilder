@@ -1,0 +1,49 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Каталог{% endblock %}
+
+{% block content %}
+<div class="container page-header">
+    <h1>Каталог сборок</h1>
+</div>
+
+<div class="container" style="padding-bottom: 4rem;">
+    <div class="filter-bar">
+        <a href="{% url 'catalog' %}" class="filter-btn{% if not cpu_filter %} active{% endif %}">Все</a>
+        <a href="{% url 'catalog' %}?cpu=intel" class="filter-btn{% if cpu_filter == 'intel' %} active{% endif %}">Intel</a>
+        <a href="{% url 'catalog' %}?cpu=amd" class="filter-btn{% if cpu_filter == 'amd' %} active{% endif %}">AMD</a>
+    </div>
+
+    {% if builds %}
+    <div class="builds-grid">
+        {% for build in builds %}
+        <article class="build-card">
+            <div class="build-card-img">
+                {% if build.image %}
+                <img src="{{ build.image.url }}" alt="{{ build.name }}">
+                {% else %}
+                <div class="build-card-placeholder">🖥</div>
+                {% endif %}
+            </div>
+            <div class="build-card-body">
+                {% if build.is_popular %}<span class="badge">Хит</span>{% endif %}
+                <h3>{{ build.name }}</h3>
+                <div class="build-specs">
+                    <span>CPU: {{ build.cpu }}</span>
+                    <span>GPU: {{ build.gpu }}</span>
+                    <span>RAM: {{ build.ram }}</span>
+                </div>
+                <div class="build-price">{{ build.price }} BYN</div>
+                <div class="build-card-actions">
+                    <a href="{% url 'build_detail' build.slug %}" class="btn btn-outline btn-sm">Подробнее</a>
+                    <a href="{% url 'index' %}?build={{ build.slug }}#quiz" class="btn btn-primary btn-sm">Заказать</a>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty-state">Сборки не найдены. Попробуйте другой фильтр или загляните в <a href="/admin/">админку</a>.</p>
+    {% endif %}
+</div>
+{% endblock %}
