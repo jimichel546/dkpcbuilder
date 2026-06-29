@@ -78,6 +78,7 @@ apply_nginx_config() {
     local app_dir="$1"
     local server_names
     server_names="$(build_server_names)"
+    sudo rm -f /etc/nginx/sites-enabled/*-le-ssl.conf
     sed -e "s|__SERVER_NAMES__|${server_names}|g" -e "s|__APP_DIR__|${app_dir}|g" \
         "${DEPLOY_DIR}/nginx.conf" | sudo tee "/etc/nginx/sites-available/pcstore" > /dev/null
     sudo ln -sf "/etc/nginx/sites-available/pcstore" "/etc/nginx/sites-enabled/pcstore"
