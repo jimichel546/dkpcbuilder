@@ -136,14 +136,61 @@
         );
     }
 
-    const contactForm = document.getElementById('contact-form');
+    const contactForm = document.getElementById('feedback-form');
     if (contactForm) {
         bindAjaxOrderForm(
             contactForm,
-            document.getElementById('contact-form-error'),
-            document.getElementById('contact-form-success'),
+            document.getElementById('feedback-form-error'),
+            document.getElementById('feedback-form-success'),
             'Спасибо! Мы свяжемся с вами в ближайшее время.'
         );
+    }
+
+    /* Cookie consent banner */
+    const COOKIE_CONSENT_KEY = 'dkpc_cookie_consent';
+    const cookieBanner = document.getElementById('cookie-banner');
+    const cookieAcceptBtn = document.getElementById('cookie-accept');
+
+    if (cookieBanner && cookieAcceptBtn) {
+        function hideCookieBanner() {
+            cookieBanner.classList.remove('is-visible');
+            window.setTimeout(function () {
+                cookieBanner.hidden = true;
+            }, 400);
+        }
+
+        function acceptCookies() {
+            try {
+                localStorage.setItem(COOKIE_CONSENT_KEY, 'accepted');
+            } catch (e) { /* ignore */ }
+            document.cookie = 'cookie_consent=accepted; path=/; max-age=31536000; SameSite=Lax';
+            hideCookieBanner();
+        }
+
+        function showCookieBanner() {
+            cookieBanner.hidden = false;
+            window.requestAnimationFrame(function () {
+                cookieBanner.classList.add('is-visible');
+            });
+        }
+
+        let hasConsent = false;
+        try {
+            hasConsent = localStorage.getItem(COOKIE_CONSENT_KEY) === 'accepted';
+        } catch (e) { /* ignore */ }
+
+        if (!hasConsent && document.cookie.indexOf('cookie_consent=accepted') !== -1) {
+            hasConsent = true;
+            try {
+                localStorage.setItem(COOKIE_CONSENT_KEY, 'accepted');
+            } catch (e) { /* ignore */ }
+        }
+
+        if (!hasConsent) {
+            showCookieBanner();
+        }
+
+        cookieAcceptBtn.addEventListener('click', acceptCookies);
     }
 
 })();

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}DK PC Builder{% endblock %} — Сборка ПК на заказ</title>
-    <link rel="stylesheet" href="{% static 'shop/css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'shop/css/main.css' %}?v=2">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -20,7 +20,7 @@
                     <li><a href="{% url 'index' %}#process">Этапы</a></li>
                     <li><a href="{% url 'index' %}#gallery">Фото</a></li>
                     <li><a href="{% url 'index' %}#reviews">Отзывы</a></li>
-                    <li><a href="{% url 'index' %}#contact">Контакты</a></li>
+                    <li><a href="{% url 'index' %}#feedback">Контакты</a></li>
                 </ul>
             </nav>
 
@@ -39,7 +39,7 @@
                 <li><a href="{% url 'index' %}#process">Этапы</a></li>
                 <li><a href="{% url 'index' %}#gallery">Фото</a></li>
                 <li><a href="{% url 'index' %}#reviews">Отзывы</a></li>
-                <li><a href="{% url 'index' %}#contact">Контакты</a></li>
+                <li><a href="{% url 'index' %}#feedback">Контакты</a></li>
                 <li><a href="{% url 'index' %}#quiz" class="header-cta-mobile">Собрать ПК</a></li>
             </ul>
         </nav>
@@ -74,16 +74,16 @@
 
             <div class="footer-col">
                 <h4>Контакты</h4>
-                <div class="contact-item">
-                    <span class="contact-icon">📞</span>
+                <div class="footer-contact">
+                    <span class="footer-contact-icon">📞</span>
                     <a href="tel:+375295315365">+375 (29) 53-15-365</a>
                 </div>
-                <div class="contact-item">
-                    <span class="contact-icon">✈</span>
+                <div class="footer-contact">
+                    <span class="footer-contact-icon">✈</span>
                     <a href="https://t.me/jimichell">@jimichell</a>
                 </div>
-                <div class="contact-item">
-                    <span class="contact-icon">✉</span>
+                <div class="footer-contact">
+                    <span class="footer-contact-icon">✉</span>
                     <a href="mailto:dkpcbuilderinfo@gmail.com">dkpcbuilderinfo@gmail.com</a>
                 </div>
             </div>
@@ -107,6 +107,19 @@
         <button class="lightbox-close" type="button" aria-label="Закрыть">&times;</button>
         <img src="" alt="">
         <p class="lightbox-caption"></p>
+    </div>
+
+    <div class="cookie-banner" id="cookie-banner" role="dialog" aria-live="polite" aria-label="Уведомление о файлах cookie" hidden>
+        <div class="cookie-banner-inner">
+            <p class="cookie-banner-text">
+                Мы используем файлы cookie для корректной работы сайта, аналитики и улучшения сервиса.
+                Продолжая пользоваться сайтом, вы соглашаетесь с их использованием.
+                <a href="{% url 'cookies' %}">Подробнее</a>
+            </p>
+            <button type="button" class="btn btn-primary btn-sm cookie-banner-btn" id="cookie-accept">
+                Принять
+            </button>
+        </div>
     </div>
 
     <script src="{% static 'shop/js/csrf.js' %}"></script>

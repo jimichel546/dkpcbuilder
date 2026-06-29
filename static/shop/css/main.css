@@ -573,8 +573,8 @@ a:hover { color: var(--accent-hover); }
 }
 .social-link:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
 
-.contact-item { display: flex; align-items: center; gap: 0.625rem; margin-bottom: 0.625rem; }
-.contact-icon { font-size: 1.125rem; width: 1.5rem; text-align: center; }
+.footer-contact { display: flex; align-items: center; gap: 0.625rem; margin-bottom: 0.625rem; }
+.footer-contact-icon { font-size: 1.125rem; width: 1.5rem; text-align: center; }
 
 .footer-bottom {
     border-top: 1px solid #222;
@@ -588,43 +588,104 @@ main { flex: 1; }
 
 .empty-state { text-align: center; color: var(--text-muted); padding: 3rem 0; }
 
-/* ── Contact form ── */
-.contact-section { background: radial-gradient(ellipse at 100% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 55%); }
-.contact-layout {
+/* ── Feedback form (не используем contact-* — блокируется AdBlock) ── */
+.feedback-section { background: radial-gradient(ellipse at 100% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 55%); }
+.feedback-layout {
     display: grid;
     grid-template-columns: 1fr;
     gap: 2.5rem;
     align-items: start;
 }
-.contact-info h2 {
+.feedback-info h2 {
     font-size: clamp(1.75rem, 4vw, 2.5rem);
     font-weight: 800;
     line-height: 1.15;
     margin-bottom: 1rem;
     letter-spacing: -0.02em;
+    color: var(--text);
 }
-.contact-info > p { color: var(--text-muted); line-height: 1.7; margin-bottom: 1.5rem; max-width: 420px; }
-.contact-benefits { list-style: none; display: flex; flex-direction: column; gap: 0.625rem; }
-.contact-benefits li {
+.feedback-info > p { color: var(--text-muted); line-height: 1.7; margin-bottom: 1.5rem; max-width: 420px; }
+.feedback-benefits { list-style: none; display: flex; flex-direction: column; gap: 0.625rem; padding: 0; }
+.feedback-benefits li {
     color: var(--text-muted);
     font-size: 0.9375rem;
     padding-left: 1.5rem;
     position: relative;
 }
-.contact-benefits li::before {
+.feedback-benefits li::before {
     content: '✓';
     position: absolute;
     left: 0;
     color: var(--accent);
     font-weight: 700;
 }
-.contact-form-box {
+.feedback-form-box {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     padding: 2rem;
 }
-.contact-submit { width: 100%; margin-top: 0.5rem; }
+.feedback-submit { width: 100%; margin-top: 0.5rem; }
+
+/* ── Cookie banner ── */
+.cookie-banner {
+    position: fixed;
+    left: 50%;
+    bottom: 1.25rem;
+    transform: translateX(-50%) translateY(calc(100% + 2rem));
+    z-index: 3000;
+    width: calc(100% - 2rem);
+    max-width: 640px;
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 0.4s ease, opacity 0.4s ease, visibility 0.4s;
+    pointer-events: none;
+}
+.cookie-banner.is-visible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+.cookie-banner-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    background: rgba(26, 26, 26, 0.96);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+.cookie-banner-text {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+}
+.cookie-banner-text a {
+    color: var(--accent);
+    white-space: nowrap;
+}
+.cookie-banner-btn {
+    flex-shrink: 0;
+    align-self: center;
+    min-width: 140px;
+}
+
+@media (min-width: 768px) {
+    .cookie-banner-inner {
+        flex-direction: row;
+        align-items: center;
+        gap: 1.5rem;
+    }
+    .cookie-banner-btn {
+        align-self: auto;
+    }
+}
 
 /* ── Responsive ── */
 @media (min-width: 768px) {
@@ -634,7 +695,7 @@ main { flex: 1; }
     .process-grid { grid-template-columns: repeat(2, 1fr); }
     .footer-grid { grid-template-columns: repeat(2, 1fr); }
     .detail-layout { grid-template-columns: 1fr 1fr; }
-    .contact-layout { grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+    .feedback-layout { grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
 }
 
 @media (min-width: 1200px) {
