@@ -74,6 +74,15 @@ build_certbot_args() {
     echo "${args[@]}"
 }
 
+build_alias_server_names() {
+    local names=()
+    local domain
+    for domain in "${DOMAINS[@]:1}"; do
+        names+=("$domain" "www.${domain}")
+    done
+    echo "${names[*]}"
+}
+
 apply_nginx_config() {
     local app_dir="$1"
     local primary="${DOMAINS[0]}"
@@ -109,13 +118,21 @@ apply_ssl_nginx_config() {
         sudo openssl dhparam -out /etc/letsencrypt/ssl-dhparams.pem 2048
     fi
 
-    local server_names
-    server_names="$(build_server_names)"
+    local alias_names
+    alias_names="$(build_alias_server_names)"
+    local nginx_config
+    nginx_config="$(cat "${DEPLOY_DIR}/nginx-ssl.conf")"
+
+    if [[ -z "${alias_names// /}" ]]; then
+        nginx_config="$(printf '%s\n' "$nginx_config" | sed '/# ALIAS_HTTP_START/,/# ALIAS_HTTP_END/d')"
+    else
+        nginx_config="${nginx_config/__ALIAS_SERVER_NAMES__/${alias_names}}"
+    fi
+    nginx_config="${nginx_config//__PRIMARY__/${primary}}"
+    nginx_config="${nginx_config//__APP_DIR__/${app_dir}}"
+
     sudo rm -f /etc/nginx/sites-enabled/*-le-ssl.conf
-    sed -e "s|__SERVER_NAMES__|${server_names}|g" \
-        -e "s|__PRIMARY__|${primary}|g" \
-        -e "s|__APP_DIR__|${app_dir}|g" \
-        "${DEPLOY_DIR}/nginx-ssl.conf" | sudo tee "/etc/nginx/sites-available/pcstore" > /dev/null
+    printf '%s\n' "$nginx_config" | sudo tee "/etc/nginx/sites-available/pcstore" > /dev/null
     sudo ln -sf "/etc/nginx/sites-available/pcstore" "/etc/nginx/sites-enabled/pcstore"
     sudo rm -f /etc/nginx/sites-enabled/default
     sudo nginx -t
