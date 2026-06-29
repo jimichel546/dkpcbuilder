@@ -76,11 +76,46 @@ build_certbot_args() {
 
 apply_nginx_config() {
     local app_dir="$1"
+    local primary="${DOMAINS[0]}"
+    local cert_dir="/etc/letsencrypt/live/${primary}"
+
+    if sudo test -f "${cert_dir}/fullchain.pem"; then
+        apply_ssl_nginx_config "$app_dir"
+        return
+    fi
+
     local server_names
     server_names="$(build_server_names)"
     sudo rm -f /etc/nginx/sites-enabled/*-le-ssl.conf
     sed -e "s|__SERVER_NAMES__|${server_names}|g" -e "s|__APP_DIR__|${app_dir}|g" \
         "${DEPLOY_DIR}/nginx.conf" | sudo tee "/etc/nginx/sites-available/pcstore" > /dev/null
+    sudo ln -sf "/etc/nginx/sites-available/pcstore" "/etc/nginx/sites-enabled/pcstore"
+    sudo rm -f /etc/nginx/sites-enabled/default
+    sudo nginx -t
+    sudo systemctl reload nginx
+}
+
+apply_ssl_nginx_config() {
+    local app_dir="$1"
+    local primary="${DOMAINS[0]}"
+    local cert_dir="/etc/letsencrypt/live/${primary}"
+
+    if ! sudo test -f "${cert_dir}/fullchain.pem"; then
+        echo "Ошибка: сертификат не найден: ${cert_dir}/fullchain.pem" >&2
+        exit 1
+    fi
+
+    if ! sudo test -f /etc/letsencrypt/ssl-dhparams.pem; then
+        sudo openssl dhparam -out /etc/letsencrypt/ssl-dhparams.pem 2048
+    fi
+
+    local server_names
+    server_names="$(build_server_names)"
+    sudo rm -f /etc/nginx/sites-enabled/*-le-ssl.conf
+    sed -e "s|__SERVER_NAMES__|${server_names}|g" \
+        -e "s|__PRIMARY__|${primary}|g" \
+        -e "s|__APP_DIR__|${app_dir}|g" \
+        "${DEPLOY_DIR}/nginx-ssl.conf" | sudo tee "/etc/nginx/sites-available/pcstore" > /dev/null
     sudo ln -sf "/etc/nginx/sites-available/pcstore" "/etc/nginx/sites-enabled/pcstore"
     sudo rm -f /etc/nginx/sites-enabled/default
     sudo nginx -t
