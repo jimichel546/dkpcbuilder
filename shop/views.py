@@ -3,15 +3,30 @@ import logging
 
 import requests
 from django.conf import settings
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 
 from .forms import ContactForm, OrderForm
 from .models import Build, GalleryPhoto, Order, Review
+from .seo import absolute_media_url
 
 logger = logging.getLogger(__name__)
+
+
+def robots_txt(request):
+    sitemap_url = f'{settings.SITE_URL.rstrip("/")}/sitemap.xml'
+    content = '\n'.join([
+        'User-agent: *',
+        'Allow: /',
+        'Disallow: /admin/',
+        'Disallow: /order/',
+        'Disallow: /success/',
+        f'Sitemap: {sitemap_url}',
+        '',
+    ])
+    return HttpResponse(content, content_type='text/plain; charset=utf-8')
 
 
 def send_telegram_notification(order: Order) -> bool:
@@ -93,7 +108,11 @@ def catalog(request):
 @ensure_csrf_cookie
 def build_detail(request, slug):
     build = get_object_or_404(Build, slug=slug, is_active=True)
-    return render(request, 'shop/build_detail.html', {'build': build})
+    og_image = absolute_media_url(build.image.url) if build.image else ''
+    return render(request, 'shop/build_detail.html', {
+        'build': build,
+        'og_image': og_image,
+    })
 
 
 def static_page(request, page):

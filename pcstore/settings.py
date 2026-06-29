@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sitemaps',
     'shop',
 ]
 
@@ -48,6 +49,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'shop.context_processors.seo',
             ],
         },
     },
@@ -88,6 +90,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 TELEGRAM_BOT_TOKEN = config('TELEGRAM_BOT_TOKEN', default='')
 TELEGRAM_CHAT_ID = config('TELEGRAM_CHAT_ID', default='')
+
+SITE_URL = config('SITE_URL', default='https://dkpcbuilder.by')
+SITE_DOMAIN = config('SITE_DOMAIN', default='dkpcbuilder.by')
+DEFAULT_META_DESCRIPTION = config(
+    'DEFAULT_META_DESCRIPTION',
+    default='Сборка игровых и рабочих ПК на заказ в Беларуси. Подбор конфигурации, '
+            'кабель-менеджмент, тестирование и настройка. DK PC Builder.',
+)
+GOOGLE_SITE_VERIFICATION = config('GOOGLE_SITE_VERIFICATION', default='')
+YANDEX_VERIFICATION = config('YANDEX_VERIFICATION', default='')
 
 CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='', cast=Csv())
 

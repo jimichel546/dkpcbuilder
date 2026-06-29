@@ -4,11 +4,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}DK PC Builder{% endblock %} — Сборка ПК на заказ</title>
+    <title>{% block title %}DK PC Builder — Сборка ПК на заказ{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}{{ default_meta_description }}{% endblock %}">
+    <meta name="robots" content="{% block robots %}{{ seo_robots }}{% endblock %}">
+    <link rel="canonical" href="{% block canonical_href %}{{ canonical_url }}{% endblock %}">
+    {% if google_site_verification %}
+    <meta name="google-site-verification" content="{{ google_site_verification }}">
+    {% endif %}
+    {% if yandex_verification %}
+    <meta name="yandex-verification" content="{{ yandex_verification }}">
+    {% endif %}
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:site_name" content="DK PC Builder">
+    <meta property="og:locale" content="ru_RU">
+    <meta property="og:title" content="{% block og_title %}DK PC Builder — Сборка ПК на заказ{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{{ default_meta_description }}{% endblock %}">
+    <meta property="og:url" content="{{ canonical_url }}">
+    {% block og_image %}{% endblock %}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}DK PC Builder — Сборка ПК на заказ{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}{{ default_meta_description }}{% endblock %}">
     <link rel="stylesheet" href="{% static 'shop/css/main.css' %}?v=2">
+    {% block extra_head %}{% endblock %}
     {% block extra_css %}{% endblock %}
-</head>
-<body>
+</head><body>
     <header class="site-header">
         <div class="container header-inner">
             <a href="{% url 'index' %}" class="logo">DK <span>PC</span> Builder</a>

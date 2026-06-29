@@ -1,6 +1,12 @@
 {% extends 'shop/base.html' %}
 
-{% block title %}{{ build.name }}{% endblock %}
+{% block title %}{{ build.name }} — {{ build.price }} BYN | DK PC Builder{% endblock %}
+{% block meta_description %}{{ build.name }}: {{ build.cpu }}, {{ build.gpu }}, {{ build.ram }}. Цена {{ build.price }} BYN. Заказать сборку ПК в Беларуси — DK PC Builder.{% endblock %}
+{% block og_title %}{{ build.name }} — DK PC Builder{% endblock %}
+{% block og_description %}{{ build.description|truncatechars:160 }}{% endblock %}
+{% block twitter_title %}{{ build.name }} — DK PC Builder{% endblock %}
+{% block twitter_description %}{{ build.cpu }}, {{ build.gpu }}. {{ build.price }} BYN.{% endblock %}
+{% block og_image %}{% if og_image %}<meta property="og:image" content="{{ og_image }}">{% endif %}{% endblock %}
 
 {% block content %}
 <div class="container detail-layout">

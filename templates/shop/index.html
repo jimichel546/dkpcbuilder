@@ -1,7 +1,34 @@
 {% extends 'shop/base.html' %}
 {% load static %}
 
-{% block title %}Главная{% endblock %}
+{% block title %}Сборка ПК на заказ в Беларуси — DK PC Builder{% endblock %}
+{% block meta_description %}Сборка игровых и рабочих компьютеров на заказ. Подбор конфигурации за 3 шага, кабель-менеджмент, тестирование. DK PC Builder, Беларусь.{% endblock %}
+{% block og_title %}Сборка ПК на заказ в Беларуси — DK PC Builder{% endblock %}
+{% block og_description %}Сборка игровых и рабочих компьютеров на заказ. Подбор конфигурации за 3 шага, кабель-менеджмент, тестирование.{% endblock %}
+{% block twitter_title %}Сборка ПК на заказ в Беларуси — DK PC Builder{% endblock %}
+{% block twitter_description %}Сборка игровых и рабочих компьютеров на заказ. Подбор конфигурации за 3 шага.{% endblock %}
+
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "DK PC Builder",
+  "url": "{{ site_url }}",
+  "description": "{{ default_meta_description|escapejs }}",
+  "telephone": "+375295315365",
+  "email": "dkpcbuilderinfo@gmail.com",
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "BY"
+  },
+  "areaServed": "BY",
+  "sameAs": [
+    "https://t.me/jimichell"
+  ]
+}
+</script>
+{% endblock %}
 
 {% block content %}
 <section class="hero">

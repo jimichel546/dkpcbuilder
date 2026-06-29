@@ -100,9 +100,14 @@ update_env_domains() {
         csrf_origins=""
     fi
 
+    site_url="https://${DOMAINS[0]}"
+    site_domain="${DOMAINS[0]}"
+
     ALLOWED_HOSTS_VAL="$allowed_hosts" \
     CSRF_ORIGINS_VAL="$csrf_origins" \
     SECURE_SSL_REDIRECT_VAL="$secure_ssl_redirect" \
+    SITE_URL_VAL="$site_url" \
+    SITE_DOMAIN_VAL="$site_domain" \
     APP_DIR_VAL="$app_dir" \
     python - <<'PY'
 import os
@@ -111,7 +116,11 @@ from pathlib import Path
 env_path = Path(os.environ["APP_DIR_VAL"]) / ".env"
 lines = env_path.read_text(encoding="utf-8").splitlines() if env_path.exists() else []
 
-updates = {"ALLOWED_HOSTS": os.environ["ALLOWED_HOSTS_VAL"]}
+updates = {
+    "ALLOWED_HOSTS": os.environ["ALLOWED_HOSTS_VAL"],
+    "SITE_URL": os.environ["SITE_URL_VAL"],
+    "SITE_DOMAIN": os.environ["SITE_DOMAIN_VAL"],
+}
 csrf = os.environ.get("CSRF_ORIGINS_VAL", "")
 if csrf:
     updates["CSRF_TRUSTED_ORIGINS"] = csrf
