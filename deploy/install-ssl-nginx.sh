@@ -13,18 +13,19 @@ load_domains
 PRIMARY="${DOMAINS[0]}"
 CERT_DIR="/etc/letsencrypt/live/${PRIMARY}"
 
-if [[ ! -f "${CERT_DIR}/fullchain.pem" ]]; then
+if ! sudo test -f "${CERT_DIR}/fullchain.pem"; then
     echo "Ошибка: сертификат не найден: ${CERT_DIR}/fullchain.pem"
+    echo "Проверка: sudo ls -la ${CERT_DIR}/"
     echo "Сначала получите сертификат через DNS:"
     echo "  sudo certbot certonly --manual --preferred-challenges dns \\"
     echo "    -d ${PRIMARY} -d www.${PRIMARY} --agree-tos -m ваш@email.com"
     exit 1
 fi
 
-if [[ ! -f /etc/letsencrypt/options-ssl-nginx.conf ]]; then
+if ! sudo test -f /etc/letsencrypt/options-ssl-nginx.conf; then
     sudo certbot install --cert-name "${PRIMARY}" --nginx 2>/dev/null || true
 fi
-if [[ ! -f /etc/letsencrypt/ssl-dhparams.pem ]]; then
+if ! sudo test -f /etc/letsencrypt/ssl-dhparams.pem; then
     sudo openssl dhparam -out /etc/letsencrypt/ssl-dhparams.pem 2048
 fi
 
