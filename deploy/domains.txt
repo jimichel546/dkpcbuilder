@@ -1,0 +1,6 @@
+# Список доменов сайта (по одному на строку, без www).
+# После изменения: git pull && ./deploy/update.sh
+dkpcbuilder.by
+dkpcbuilder.online
+dkpcbuilder.site
+dkpcbuilder.xyz

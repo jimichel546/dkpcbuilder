@@ -2,25 +2,26 @@
 set -euo pipefail
 
 # Первичная установка на Ubuntu/Debian VPS.
-# Запуск из корня проекта после git clone:
-#   chmod +x deploy/*.sh
-#   ./deploy/install.sh yourdomain.com
+# Домены задаются в deploy/domains.txt
+# Запуск: chmod +x deploy/*.sh && ./deploy/install.sh
 
-DOMAIN="${1:-}"
 APP_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 DEPLOY_USER="$(whoami)"
 SERVICE_NAME="pcstore"
-NGINX_SITE="pcstore"
 
-if [[ -z "$DOMAIN" ]]; then
-    echo "Использование: ./deploy/install.sh yourdomain.com"
-    exit 1
-fi
+# shellcheck source=common.sh
+source "${APP_DIR}/deploy/common.sh"
 
 if [[ "$EUID" -eq 0 ]]; then
     echo "Не запускайте install.sh от root. Используйте обычного пользователя с sudo."
     exit 1
 fi
+
+load_domains
+load_server_ip
+PRIMARY_DOMAIN="${DOMAINS[0]}"
+
+echo "==> Домены: ${DOMAINS[*]}"
 
 echo "==> Установка системных пакетов"
 sudo apt update
@@ -42,16 +43,9 @@ python - <<PY
 from pathlib import Path
 from django.core.management.utils import get_random_secret_key
 
-domain = "${DOMAIN}"
 env_path = Path(".env")
-lines = env_path.read_text(encoding="utf-8").splitlines()
-updates = {
-    "SECRET_KEY": get_random_secret_key(),
-    "DEBUG": "False",
-    "ALLOWED_HOSTS": f"{domain},www.{domain}",
-    "CSRF_TRUSTED_ORIGINS": f"http://{domain},http://www.{domain},https://{domain},https://www.{domain}",
-    "SECURE_SSL_REDIRECT": "False",
-}
+lines = env_path.read_text(encoding="utf-8").splitlines() if env_path.exists() else []
+updates = {"SECRET_KEY": get_random_secret_key()}
 seen = set()
 result = []
 for line in lines:
@@ -67,11 +61,17 @@ for key, value in updates.items():
 env_path.write_text("\n".join(result) + "\n", encoding="utf-8")
 PY
 
+update_env_domains "$APP_DIR" "false"
+
 mkdir -p media staticfiles
 
 echo "==> Django: migrate и collectstatic"
 python manage.py migrate --noinput
 python manage.py collectstatic --noinput
+
+echo "==> Права доступа для Nginx (static/media)"
+chmod o+x "$HOME"
+chmod -R o+rX "${APP_DIR}/staticfiles" "${APP_DIR}/media"
 
 echo "==> Systemd-сервис"
 sed -e "s|__APP_DIR__|${APP_DIR}|g" -e "s|__DEPLOY_USER__|${DEPLOY_USER}|g" \
@@ -82,20 +82,14 @@ sudo systemctl enable "${SERVICE_NAME}"
 sudo systemctl restart "${SERVICE_NAME}"
 
 echo "==> Nginx"
-sed -e "s|__DOMAIN__|${DOMAIN}|g" -e "s|__APP_DIR__|${APP_DIR}|g" \
-    deploy/nginx.conf | sudo tee "/etc/nginx/sites-available/${NGINX_SITE}" > /dev/null
-
-sudo ln -sf "/etc/nginx/sites-available/${NGINX_SITE}" "/etc/nginx/sites-enabled/${NGINX_SITE}"
-sudo rm -f /etc/nginx/sites-enabled/default
-sudo nginx -t
-sudo systemctl reload nginx
+apply_nginx_config "$APP_DIR"
 
 echo ""
-echo "Готово. Сайт доступен по HTTP: http://${DOMAIN}"
+echo "Готово. Основной домен: http://${PRIMARY_DOMAIN}"
 echo ""
 echo "Следующие шаги:"
-echo "  1. Убедитесь, что DNS A-запись домена указывает на IP этого сервера."
+echo "  1. Настройте DNS A-записи для всех доменов из deploy/domains.txt"
 echo "  2. Создайте администратора: cd ${APP_DIR} && source venv/bin/activate && python manage.py createsuperuser"
-echo "  3. Получите SSL: sudo certbot --nginx -d ${DOMAIN} -d www.${DOMAIN}"
+echo "  3. Получите SSL: ./deploy/certbot.sh"
 echo "  4. Включите HTTPS-редирект: ./deploy/enable-ssl.sh"
 echo "  5. После обновлений кода: ./deploy/update.sh"
