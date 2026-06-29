@@ -49,8 +49,8 @@ updates = {
     "SECRET_KEY": get_random_secret_key(),
     "DEBUG": "False",
     "ALLOWED_HOSTS": f"{domain},www.{domain}",
-    "CSRF_TRUSTED_ORIGINS": f"https://{domain},https://www.{domain}",
-    "SECURE_SSL_REDIRECT": "True",
+    "CSRF_TRUSTED_ORIGINS": f"http://{domain},http://www.{domain},https://{domain},https://www.{domain}",
+    "SECURE_SSL_REDIRECT": "False",
 }
 seen = set()
 result = []
@@ -97,4 +97,5 @@ echo "Следующие шаги:"
 echo "  1. Убедитесь, что DNS A-запись домена указывает на IP этого сервера."
 echo "  2. Создайте администратора: cd ${APP_DIR} && source venv/bin/activate && python manage.py createsuperuser"
 echo "  3. Получите SSL: sudo certbot --nginx -d ${DOMAIN} -d www.${DOMAIN}"
-echo "  4. После обновлений кода: ./deploy/update.sh"
+echo "  4. Включите HTTPS-редирект: ./deploy/enable-ssl.sh"
+echo "  5. После обновлений кода: ./deploy/update.sh"
