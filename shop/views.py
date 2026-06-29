@@ -5,9 +5,10 @@ import requests
 from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 
-from .forms import OrderForm
+from .forms import ContactForm, OrderForm
 from .models import Build, GalleryPhoto, Order, Review
 
 logger = logging.getLogger(__name__)
@@ -60,6 +61,7 @@ def _is_ajax(request):
     )
 
 
+@ensure_csrf_cookie
 def index(request):
     builds = Build.objects.filter(is_active=True)[:6]
     reviews = Review.objects.filter(is_published=True)[:6]
@@ -73,6 +75,7 @@ def index(request):
         'reviews': reviews,
         'photos': photos,
         'prefill_build': prefill_build,
+        'contact_form': ContactForm(),
     })
 
 
@@ -87,6 +90,7 @@ def catalog(request):
     })
 
 
+@ensure_csrf_cookie
 def build_detail(request, slug):
     build = get_object_or_404(Build, slug=slug, is_active=True)
     return render(request, 'shop/build_detail.html', {'build': build})
@@ -104,14 +108,16 @@ def submit_order(request):
         except json.JSONDecodeError:
             return JsonResponse({'status': 'error', 'errors': {'__all__': ['Неверный JSON']}}, status=400)
 
-        form = OrderForm(data)
+        form_class = ContactForm if 'budget' not in data and 'purpose' not in data else OrderForm
+        form = form_class(data)
         if form.is_valid():
             order = form.save()
             send_telegram_notification(order)
             return JsonResponse({'status': 'ok'})
         return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
 
-    form = OrderForm(request.POST)
+    form_class = ContactForm if 'budget' not in request.POST and 'purpose' not in request.POST else OrderForm
+    form = form_class(request.POST)
     if form.is_valid():
         order = form.save()
         send_telegram_notification(order)
@@ -121,6 +127,7 @@ def submit_order(request):
         'reviews': Review.objects.filter(is_published=True)[:6],
         'photos': GalleryPhoto.objects.order_by('order')[:9],
         'prefill_build': None,
+        'contact_form': ContactForm(),
     }, status=400)
 
 

@@ -39,9 +39,8 @@
     const quizError = document.getElementById('quiz-error');
     const submitUrl = quizSection.dataset.submitUrl;
 
-    function getCookie(name) {
-        const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-        return match ? decodeURIComponent(match[2]) : null;
+    function getCsrfToken() {
+        return window.getCsrfToken ? window.getCsrfToken() : '';
     }
 
     function showError(msg) {
@@ -153,17 +152,29 @@
         const buildId = quizSection.dataset.buildId;
         if (buildId) payload.build = buildId;
 
+        const csrfToken = getCsrfToken();
+        if (!csrfToken) {
+            showError('Ошибка безопасности. Обновите страницу и попробуйте снова.');
+            btn.disabled = false;
+            btn.textContent = 'Получить подборку';
+            return;
+        }
+
         fetch(submitUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken'),
+                'X-CSRFToken': csrfToken,
                 'X-Requested-With': 'XMLHttpRequest',
             },
             body: JSON.stringify(payload),
         })
         .then(function (res) {
-            return res.json().then(function (data) { return { ok: res.ok, data: data }; });
+            const contentType = res.headers.get('Content-Type') || '';
+            if (contentType.includes('application/json')) {
+                return res.json().then(function (data) { return { ok: res.ok, data: data }; });
+            }
+            return { ok: false, data: { errors: { __all__: ['Ошибка сервера. Обновите страницу.'] } } };
         })
         .then(function (result) {
             if (result.ok && result.data.status === 'ok') {

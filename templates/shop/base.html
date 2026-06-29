@@ -20,7 +20,7 @@
                     <li><a href="{% url 'index' %}#process">Этапы</a></li>
                     <li><a href="{% url 'index' %}#gallery">Фото</a></li>
                     <li><a href="{% url 'index' %}#reviews">Отзывы</a></li>
-                    <li><a href="{% url 'index' %}#contacts">Контакты</a></li>
+                    <li><a href="{% url 'index' %}#contact">Контакты</a></li>
                 </ul>
             </nav>
 
@@ -39,7 +39,7 @@
                 <li><a href="{% url 'index' %}#process">Этапы</a></li>
                 <li><a href="{% url 'index' %}#gallery">Фото</a></li>
                 <li><a href="{% url 'index' %}#reviews">Отзывы</a></li>
-                <li><a href="{% url 'index' %}#contacts">Контакты</a></li>
+                <li><a href="{% url 'index' %}#contact">Контакты</a></li>
                 <li><a href="{% url 'index' %}#quiz" class="header-cta-mobile">Собрать ПК</a></li>
             </ul>
         </nav>
@@ -76,15 +76,15 @@
                 <h4>Контакты</h4>
                 <div class="contact-item">
                     <span class="contact-icon">📞</span>
-                    <a href="tel:+375291234567">+375 (29) 123-45-67</a>
+                    <a href="tel:+375295315365">+375 (29) 53-15-365</a>
                 </div>
                 <div class="contact-item">
                     <span class="contact-icon">✈</span>
-                    <a href="https://t.me/dkpcbuilder">@dkpcbuilder</a>
+                    <a href="https://t.me/jimichell">@jimichell</a>
                 </div>
                 <div class="contact-item">
                     <span class="contact-icon">✉</span>
-                    <a href="mailto:info@dkpcbuilder.by">info@dkpcbuilder.by</a>
+                    <a href="mailto:dkpcbuilderinfo@gmail.com">dkpcbuilderinfo@gmail.com</a>
                 </div>
             </div>
 
@@ -109,6 +109,7 @@
         <p class="lightbox-caption"></p>
     </div>
 
+    <script src="{% static 'shop/js/csrf.js' %}"></script>
     <script src="{% static 'shop/js/main.js' %}"></script>
     {% block extra_js %}{% endblock %}
 </body>

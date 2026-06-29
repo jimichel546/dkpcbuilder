@@ -226,6 +226,42 @@
         {% endif %}
     </div>
 </section>
+
+<section class="section contact-section" id="contact">
+    <div class="container">
+        <div class="contact-layout">
+            <div class="contact-info">
+                <h2>Ваш проект.<br>Наше исполнение.</h2>
+                <p>Опишите задачу — мы свяжемся с вами, уточним детали и предложим оптимальную конфигурацию под ваш бюджет.</p>
+                <ul class="contact-benefits">
+                    <li>Ответ в течение рабочего дня</li>
+                    <li>Индивидуальный подбор комплектующих</li>
+                    <li>Консультация без обязательств</li>
+                </ul>
+            </div>
+            <div class="contact-form-box">
+                <div class="form-error" id="contact-form-error"></div>
+                <div class="form-success" id="contact-form-success"></div>
+                <form id="contact-form" action="{% url 'submit_order' %}" method="post" novalidate>
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="contact-name">Ваше имя</label>
+                        <input type="text" id="contact-name" name="name" required placeholder="Как к вам обращаться" autocomplete="name">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-phone">Телефон или Telegram</label>
+                        <input type="text" id="contact-phone" name="contact" required placeholder="+375... или @username" autocomplete="tel">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-message">Расскажите о проекте</label>
+                        <textarea id="contact-message" name="comment" rows="5" placeholder="Задачи, пожелания по сборке, бюджет — всё, что считаете важным"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary contact-submit">Отправить заявку</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}
 
 {% block extra_js %}

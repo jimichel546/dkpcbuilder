@@ -35,11 +35,11 @@
         <p class="detail-desc">{{ build.description }}</p>
 
         <div class="order-form-box" id="order">
-            {% csrf_token %}
             <h2>Заказать эту сборку</h2>
             <div class="form-error" id="order-form-error"></div>
             <div class="form-success" id="order-form-success"></div>
             <form id="build-order-form" action="{% url 'submit_order' %}" method="post">
+                {% csrf_token %}
                 <input type="hidden" name="build" value="{{ build.pk }}">
                 <input type="hidden" name="comment" value="{{ build.name }}">
                 <div class="form-group">

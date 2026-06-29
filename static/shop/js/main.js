@@ -59,38 +59,52 @@
         });
     }
 
-    /* Order form (build detail) */
-    const orderForm = document.getElementById('build-order-form');
-    if (orderForm) {
-        orderForm.addEventListener('submit', function (e) {
+    /* Order forms (build detail + contact) */
+    function bindAjaxOrderForm(form, errorEl, successEl, successMessage) {
+        form.addEventListener('submit', function (e) {
             e.preventDefault();
-            const errorEl = document.getElementById('order-form-error');
-            const successEl = document.getElementById('order-form-success');
             errorEl.style.display = 'none';
             successEl.style.display = 'none';
 
-            const formData = new FormData(orderForm);
-            const payload = Object.fromEntries(formData.entries());
+            const submitBtn = form.querySelector('[type="submit"]');
+            const btnText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Отправка…';
 
-            fetch(orderForm.action, {
+            const payload = Object.fromEntries(new FormData(form).entries());
+            const csrfToken = window.getCsrfToken();
+
+            if (!csrfToken) {
+                errorEl.textContent = 'Ошибка безопасности. Обновите страницу и попробуйте снова.';
+                errorEl.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = btnText;
+                return;
+            }
+
+            fetch(form.action, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-CSRFToken': csrfToken,
                     'X-Requested-With': 'XMLHttpRequest',
                 },
                 body: JSON.stringify(payload),
             })
             .then(function (res) {
-                return res.json().then(function (data) {
-                    return { ok: res.ok, data: data };
-                });
+                const contentType = res.headers.get('Content-Type') || '';
+                if (contentType.includes('application/json')) {
+                    return res.json().then(function (data) {
+                        return { ok: res.ok, data: data };
+                    });
+                }
+                return { ok: false, data: { errors: { __all__: ['Ошибка сервера. Обновите страницу.'] } } };
             })
             .then(function (result) {
                 if (result.ok && result.data.status === 'ok') {
-                    successEl.textContent = 'Заявка отправлена! Мы свяжемся с вами.';
+                    successEl.textContent = successMessage;
                     successEl.style.display = 'block';
-                    orderForm.reset();
+                    form.reset();
                 } else {
                     const errors = result.data.errors;
                     let msg = 'Ошибка отправки.';
@@ -104,12 +118,32 @@
             .catch(function () {
                 errorEl.textContent = 'Не удалось отправить заявку.';
                 errorEl.style.display = 'block';
+            })
+            .finally(function () {
+                submitBtn.disabled = false;
+                submitBtn.textContent = btnText;
             });
         });
     }
 
-    function getCookie(name) {
-        const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-        return match ? decodeURIComponent(match[2]) : null;
+    const orderForm = document.getElementById('build-order-form');
+    if (orderForm) {
+        bindAjaxOrderForm(
+            orderForm,
+            document.getElementById('order-form-error'),
+            document.getElementById('order-form-success'),
+            'Заявка отправлена! Мы свяжемся с вами.'
+        );
     }
+
+    const contactForm = document.getElementById('contact-form');
+    if (contactForm) {
+        bindAjaxOrderForm(
+            contactForm,
+            document.getElementById('contact-form-error'),
+            document.getElementById('contact-form-success'),
+            'Спасибо! Мы свяжемся с вами в ближайшее время.'
+        );
+    }
+
 })();

@@ -588,6 +588,44 @@ main { flex: 1; }
 
 .empty-state { text-align: center; color: var(--text-muted); padding: 3rem 0; }
 
+/* ── Contact form ── */
+.contact-section { background: radial-gradient(ellipse at 100% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 55%); }
+.contact-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    align-items: start;
+}
+.contact-info h2 {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+}
+.contact-info > p { color: var(--text-muted); line-height: 1.7; margin-bottom: 1.5rem; max-width: 420px; }
+.contact-benefits { list-style: none; display: flex; flex-direction: column; gap: 0.625rem; }
+.contact-benefits li {
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+.contact-benefits li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: 700;
+}
+.contact-form-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+}
+.contact-submit { width: 100%; margin-top: 0.5rem; }
+
 /* ── Responsive ── */
 @media (min-width: 768px) {
     .gallery-grid { grid-template-columns: repeat(2, 1fr); }
@@ -596,6 +634,7 @@ main { flex: 1; }
     .process-grid { grid-template-columns: repeat(2, 1fr); }
     .footer-grid { grid-template-columns: repeat(2, 1fr); }
     .detail-layout { grid-template-columns: 1fr 1fr; }
+    .contact-layout { grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
 }
 
 @media (min-width: 1200px) {
