@@ -8,47 +8,95 @@
 {% block twitter_description %}Готовые конфигурации игровых и рабочих ПК. Сборки Intel и AMD.{% endblock %}
 
 {% block content %}
-<div class="container page-header">
-    <h1>Каталог сборок</h1>
-</div>
+<div class="container catalog-page">
+    <aside class="catalog-sidebar">
+        <h1 class="catalog-sidebar-title">Каталог</h1>
+        <nav class="catalog-filters" aria-label="Фильтр по процессору">
+            <a href="{% url 'catalog' %}" class="catalog-filter{% if not cpu_filter %} is-active{% endif %}">Все ПК</a>
+            <a href="{% url 'catalog' %}?cpu=amd" class="catalog-filter{% if cpu_filter == 'amd' %} is-active{% endif %}">AMD</a>
+            <a href="{% url 'catalog' %}?cpu=intel" class="catalog-filter{% if cpu_filter == 'intel' %} is-active{% endif %}">Intel</a>
+        </nav>
+    </aside>
 
-<div class="container" style="padding-bottom: 4rem;">
-    <div class="filter-bar">
-        <a href="{% url 'catalog' %}" class="filter-btn{% if not cpu_filter %} active{% endif %}">Все</a>
-        <a href="{% url 'catalog' %}?cpu=intel" class="filter-btn{% if cpu_filter == 'intel' %} active{% endif %}">Intel</a>
-        <a href="{% url 'catalog' %}?cpu=amd" class="filter-btn{% if cpu_filter == 'amd' %} active{% endif %}">AMD</a>
-    </div>
+    <div class="catalog-main">
+        {% if builds %}
+        <div class="catalog-list">
+            {% for build in builds %}
+            <article class="catalog-card">
+                <a href="{% url 'build_detail' build.slug %}" class="catalog-card-media">
+                    {% if build.image %}
+                    <img src="{{ build.image.url }}" alt="{{ build.name }}">
+                    {% else %}
+                    <div class="catalog-card-placeholder">🖥</div>
+                    {% endif %}
+                </a>
 
-    {% if builds %}
-    <div class="builds-grid">
-        {% for build in builds %}
-        <article class="build-card">
-            <div class="build-card-img">
-                {% if build.image %}
-                <img src="{{ build.image.url }}" alt="{{ build.name }}">
-                {% else %}
-                <div class="build-card-placeholder">🖥</div>
-                {% endif %}
-            </div>
-            <div class="build-card-body">
-                {% if build.is_popular %}<span class="badge">Хит</span>{% endif %}
-                <h3>{{ build.name }}</h3>
-                <div class="build-specs">
-                    <span>CPU: {{ build.cpu }}</span>
-                    <span>GPU: {{ build.gpu }}</span>
-                    <span>RAM: {{ build.ram }}</span>
+                <div class="catalog-card-info">
+                    <div class="catalog-card-head">
+                        <h2 class="catalog-card-title">
+                            <a href="{% url 'build_detail' build.slug %}">{{ build.name }}</a>
+                        </h2>
+                        <span class="catalog-stock-badge">✓ В наличии</span>
+                    </div>
+
+                    {% if build.is_popular %}<span class="catalog-hit-badge">Хит продаж</span>{% endif %}
+
+                    <div class="catalog-card-price">{{ build.price }} BYN</div>
+
+                    <a href="{% url 'build_detail' build.slug %}#order" class="btn btn-primary catalog-buy-btn">Заказать ПК</a>
                 </div>
-                <div class="build-price">От {{ build.price }} BYN</div>
-                <div class="build-card-actions">
-                    <a href="{% url 'build_detail' build.slug %}" class="btn btn-outline btn-sm">Подробнее</a>
-                    <a href="{% url 'index' %}?build={{ build.slug }}#quiz" class="btn btn-primary btn-sm">Заказать</a>
+
+                <div class="catalog-card-specs">
+                    <div class="catalog-specs-header">
+                        <span class="catalog-specs-label">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                            Спецификация
+                        </span>
+                        <span class="catalog-cpu-badge catalog-cpu-badge--{{ build.cpu_brand }}">{{ build.get_cpu_brand_display }}</span>
+                    </div>
+
+                    <ul class="catalog-specs-list">
+                        <li class="catalog-spec-item">
+                            <span class="catalog-spec-icon" aria-hidden="true">🎮</span>
+                            <span class="catalog-spec-content">
+                                <span class="catalog-spec-key">Видеокарта</span>
+                                <span class="catalog-spec-val">{{ build.gpu }}</span>
+                            </span>
+                        </li>
+                        <li class="catalog-spec-item">
+                            <span class="catalog-spec-icon" aria-hidden="true">⚡</span>
+                            <span class="catalog-spec-content">
+                                <span class="catalog-spec-key">Процессор</span>
+                                <span class="catalog-spec-val">{{ build.cpu }}</span>
+                            </span>
+                        </li>
+                        <li class="catalog-spec-item">
+                            <span class="catalog-spec-icon" aria-hidden="true">💾</span>
+                            <span class="catalog-spec-content">
+                                <span class="catalog-spec-key">Память</span>
+                                <span class="catalog-spec-val">{{ build.ram }}</span>
+                            </span>
+                        </li>
+                        <li class="catalog-spec-item">
+                            <span class="catalog-spec-icon" aria-hidden="true">💿</span>
+                            <span class="catalog-spec-content">
+                                <span class="catalog-spec-key">Накопитель</span>
+                                <span class="catalog-spec-val">{{ build.storage }}</span>
+                            </span>
+                        </li>
+                    </ul>
+
+                    <a href="{% url 'build_detail' build.slug %}" class="catalog-details-btn">
+                        Смотреть подробнее
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </a>
                 </div>
-            </div>
-        </article>
-        {% endfor %}
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-state">Сборки не найдены. Попробуйте другой фильтр или загляните в <a href="/admin/">админку</a>.</p>
+        {% endif %}
     </div>
-    {% else %}
-    <p class="empty-state">Сборки не найдены. Попробуйте другой фильтр или загляните в <a href="/admin/">админку</a>.</p>
-    {% endif %}
 </div>
 {% endblock %}

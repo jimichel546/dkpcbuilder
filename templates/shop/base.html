@@ -24,7 +24,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{% block twitter_title %}DK PC Builder — Сборка ПК на заказ{% endblock %}">
     <meta name="twitter:description" content="{% block twitter_description %}{{ default_meta_description }}{% endblock %}">
-    <link rel="stylesheet" href="{% static 'shop/css/main.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'shop/css/main.css' %}?v=4">
     {% block extra_head %}{% endblock %}
     {% block extra_css %}{% endblock %}
 </head><body>
@@ -44,6 +44,7 @@
             </nav>
 
             <div class="header-actions">
+                <button type="button" class="btn btn-sm header-consult-btn" data-consult-open>Консультация</button>
                 <a href="{% url 'index' %}#quiz" class="btn btn-primary btn-sm header-cta-desktop">Собрать ПК</a>
                 <button class="burger" aria-label="Меню" type="button">
                     <span></span><span></span><span></span>
@@ -59,6 +60,7 @@
                 <li><a href="{% url 'index' %}#gallery">Фото</a></li>
                 <li><a href="{% url 'index' %}#reviews">Отзывы</a></li>
                 <li><a href="{% url 'index' %}#feedback">Контакты</a></li>
+                <li><button type="button" class="nav-mobile-consult" data-consult-open>Консультация</button></li>
                 <li><a href="{% url 'index' %}#quiz" class="header-cta-mobile">Собрать ПК</a></li>
             </ul>
         </nav>
@@ -126,6 +128,33 @@
         <button class="lightbox-close" type="button" aria-label="Закрыть">&times;</button>
         <img src="" alt="">
         <p class="lightbox-caption"></p>
+    </div>
+
+    <div class="consult-modal" id="consult-modal" hidden>
+        <div class="consult-modal-backdrop" data-consult-close></div>
+        <div class="consult-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="consult-modal-title">
+            <button class="consult-modal-close" type="button" data-consult-close aria-label="Закрыть">&times;</button>
+            <h2 class="consult-modal-title" id="consult-modal-title">Консультация</h2>
+            <p class="consult-modal-text">Свяжитесь с нами — ответим на вопросы по сборке и подберём конфигурацию.</p>
+            <div class="consult-modal-links">
+                <a href="{{ contact_telegram_url }}" class="consult-link consult-link--telegram" target="_blank" rel="noopener noreferrer">
+                    <span class="consult-link-icon" aria-hidden="true">✈</span>
+                    <span class="consult-link-body">
+                        <span class="consult-link-label">Telegram</span>
+                        <span class="consult-link-value">{{ contact_telegram_label }}</span>
+                    </span>
+                </a>
+                {% if contact_kufar_url %}
+                <a href="{{ contact_kufar_url }}" class="consult-link consult-link--kufar" target="_blank" rel="noopener noreferrer">
+                    <span class="consult-link-icon" aria-hidden="true">🛒</span>
+                    <span class="consult-link-body">
+                        <span class="consult-link-label">Kufar</span>
+                        <span class="consult-link-value">{{ contact_kufar_label }}</span>
+                    </span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
     </div>
 
     <div class="cookie-banner" id="cookie-banner" role="dialog" aria-live="polite" aria-label="Уведомление о файлах cookie" hidden>

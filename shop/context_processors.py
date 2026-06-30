@@ -15,4 +15,8 @@ def seo(request):
         'default_meta_description': settings.DEFAULT_META_DESCRIPTION,
         'google_site_verification': settings.GOOGLE_SITE_VERIFICATION,
         'yandex_verification': settings.YANDEX_VERIFICATION,
+        'contact_telegram_url': settings.CONTACT_TELEGRAM_URL,
+        'contact_telegram_label': settings.CONTACT_TELEGRAM_LABEL,
+        'contact_kufar_url': settings.CONTACT_KUFAR_URL,
+        'contact_kufar_label': settings.CONTACT_KUFAR_LABEL,
     }

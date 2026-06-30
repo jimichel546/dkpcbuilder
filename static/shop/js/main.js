@@ -59,6 +59,42 @@
         });
     }
 
+    /* Consultation modal */
+    const consultModal = document.getElementById('consult-modal');
+    if (consultModal) {
+        function openConsultModal() {
+            if (burger && navMobile) {
+                burger.classList.remove('active');
+                navMobile.classList.remove('open');
+            }
+            consultModal.hidden = false;
+            consultModal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeConsultModal() {
+            consultModal.classList.remove('open');
+            consultModal.hidden = true;
+            if (!navMobile || !navMobile.classList.contains('open')) {
+                document.body.style.overflow = '';
+            }
+        }
+
+        document.querySelectorAll('[data-consult-open]').forEach(function (btn) {
+            btn.addEventListener('click', openConsultModal);
+        });
+
+        consultModal.querySelectorAll('[data-consult-close]').forEach(function (el) {
+            el.addEventListener('click', closeConsultModal);
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && consultModal.classList.contains('open')) {
+                closeConsultModal();
+            }
+        });
+    }
+
     /* Order forms (build detail + contact) */
     function bindAjaxOrderForm(form, errorEl, successEl, successMessage) {
         form.addEventListener('submit', function (e) {

@@ -91,6 +91,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 TELEGRAM_BOT_TOKEN = config('TELEGRAM_BOT_TOKEN', default='')
 TELEGRAM_CHAT_ID = config('TELEGRAM_CHAT_ID', default='')
 
+CONTACT_TELEGRAM_URL = config('CONTACT_TELEGRAM_URL', default='https://t.me/jimichell')
+CONTACT_TELEGRAM_LABEL = config('CONTACT_TELEGRAM_LABEL', default='@jimichell')
+CONTACT_KUFAR_URL = config('CONTACT_KUFAR_URL', default='')
+CONTACT_KUFAR_LABEL = config('CONTACT_KUFAR_LABEL', default='Профиль на Kufar')
+
 SITE_URL = config('SITE_URL', default='https://dkpcbuilder.by')
 SITE_DOMAIN = config('SITE_DOMAIN', default='dkpcbuilder.by')
 DEFAULT_META_DESCRIPTION = config(
