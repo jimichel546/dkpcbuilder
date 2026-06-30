@@ -1,7 +1,6 @@
 import json
 import logging
 
-import requests
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -9,8 +8,9 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 
 from .forms import BuildOrderForm, ContactForm, OrderForm
-from .models import Build, GalleryPhoto, Order, Review
+from .models import Build, GalleryPhoto, Review
 from .seo import absolute_media_url
+from .telegram_notify import schedule_telegram_notification
 
 logger = logging.getLogger(__name__)
 
@@ -27,51 +27,6 @@ def robots_txt(request):
         '',
     ])
     return HttpResponse(content, content_type='text/plain; charset=utf-8')
-
-
-def send_telegram_notification(order: Order) -> bool:
-    token = settings.TELEGRAM_BOT_TOKEN
-    chat_id = settings.TELEGRAM_CHAT_ID
-
-    if not token or not chat_id or chat_id == 'your-chat-id':
-        logger.warning(
-            'Telegram не настроен: проверьте TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID в .env'
-        )
-        return False
-
-    build_name = order.build.name if order.build else 'Не выбрана'
-    if order.build:
-        text = (
-            f'🖥 Заявка на сборку «{build_name}»\n\n'
-            f'👤 Имя: {order.name}\n'
-            f'📞 Контакт: {order.contact}\n'
-        )
-    else:
-        text = (
-            f'🖥 Новая заявка на сборку ПК\n\n'
-            f'👤 Имя: {order.name}\n'
-            f'📞 Контакт: {order.contact}\n'
-            f'💰 Бюджет: {order.get_budget_display()}\n'
-            f'🎯 Цель: {order.get_purpose_display()}\n'
-            f'📦 Сборка: {build_name}\n'
-        )
-    if order.comment:
-        text += f'\n💬 Комментарий:\n{order.comment}'
-
-    url = f'https://api.telegram.org/bot{token}/sendMessage'
-    try:
-        response = requests.post(
-            url,
-            json={'chat_id': chat_id, 'text': text},
-            timeout=10,
-        )
-        response.raise_for_status()
-        return True
-    except requests.RequestException as exc:
-        logger.error('Ошибка отправки в Telegram: %s', exc)
-        if hasattr(exc, 'response') and exc.response is not None:
-            logger.error('Ответ Telegram API: %s', exc.response.text)
-        return False
 
 
 def _is_ajax(request):
@@ -146,7 +101,7 @@ def submit_order(request):
         form = form_class(data)
         if form.is_valid():
             order = form.save()
-            send_telegram_notification(order)
+            schedule_telegram_notification(order)
             return JsonResponse({'status': 'ok'})
         return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
 
@@ -154,7 +109,7 @@ def submit_order(request):
     form = form_class(request.POST)
     if form.is_valid():
         order = form.save()
-        send_telegram_notification(order)
+        schedule_telegram_notification(order)
         return redirect('quiz_success')
     return render(request, 'shop/index.html', {
         'builds': Build.objects.filter(is_active=True)[:6],
