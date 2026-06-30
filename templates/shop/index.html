@@ -235,6 +235,11 @@
         <div class="reviews-grid">
             {% for review in reviews %}
             <div class="review-card">
+                <div class="review-image"
+                     data-lightbox="{{ review.image.url }}"
+                     data-caption="Отзыв — {{ review.author }}">
+                    <img src="{{ review.image.url }}" alt="Фото от {{ review.author }}">
+                </div>
                 <div class="review-header">
                     <span class="review-author">{{ review.author }}</span>
                     <span class="review-date">{{ review.created_at|date:"d.m.Y" }}</span>

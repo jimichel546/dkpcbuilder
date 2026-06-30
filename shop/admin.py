@@ -28,6 +28,7 @@ class ReviewAdmin(admin.ModelAdmin):
     list_display = ('author', 'rating', 'is_published', 'created_at')
     list_editable = ('is_published',)
     list_filter = ('rating', 'is_published')
+    fields = ('author', 'text', 'image', 'rating', 'is_published')
 
 
 @admin.register(GalleryPhoto)

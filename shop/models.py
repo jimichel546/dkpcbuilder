@@ -83,6 +83,7 @@ class Review(models.Model):
 
     author = models.CharField('Автор', max_length=100)
     text = models.TextField('Текст')
+    image = models.ImageField('Фото', upload_to='reviews/')
     rating = models.IntegerField('Оценка', choices=RATING_CHOICES)
     created_at = models.DateTimeField('Создан', auto_now_add=True)
     is_published = models.BooleanField('Опубликован', default=False)
