@@ -9,37 +9,45 @@
 {% block og_image %}{% if og_image %}<meta property="og:image" content="{{ og_image }}">{% endif %}{% endblock %}
 
 {% block content %}
-<div class="container detail-layout">
-    <div class="detail-image">
-        {% if build.image %}
-        <img src="{{ build.image.url }}" alt="{{ build.name }}">
-        {% else %}
-        <div class="build-card-placeholder" style="height:100%;font-size:5rem;">🖥</div>
-        {% endif %}
+<div class="container detail-page">
+    <div class="detail-top">
+        <div class="detail-hero{% if build.image %} detail-hero--clickable{% endif %}"
+             {% if build.image %}data-lightbox="{{ build.image.url }}" data-caption="{{ build.name }}"{% endif %}>
+            {% if build.image %}
+            <img src="{{ build.image.url }}" alt="{{ build.name }}">
+            {% else %}
+            <div class="build-card-placeholder detail-hero-placeholder">🖥</div>
+            {% endif %}
+        </div>
+
+        <div class="detail-summary">
+            {% if build.is_popular %}<span class="badge">Хит продаж</span>{% endif %}
+            <h1>{{ build.name }}</h1>
+            <div class="detail-price">От {{ build.price }} BYN</div>
+
+            <dl class="detail-specs">
+                <dt>Процессор</dt>
+                <dd>{{ build.cpu }} ({{ build.get_cpu_brand_display }})</dd>
+                <dt>Видеокарта</dt>
+                <dd>{{ build.gpu }}</dd>
+                <dt>Оперативная память</dt>
+                <dd>{{ build.ram }}</dd>
+                <dt>Накопитель</dt>
+                <dd>{{ build.storage }}</dd>
+                <dt>Корпус</dt>
+                <dd>{{ build.case }}</dd>
+                <dt>Категория</dt>
+                <dd>{{ build.get_category_display }}</dd>
+            </dl>
+
+            <div class="detail-desc-box">
+                <h2 class="detail-desc-title">Описание</h2>
+                <p class="detail-desc">{{ build.description }}</p>
+            </div>
+        </div>
     </div>
 
-    <div class="detail-info">
-        {% if build.is_popular %}<span class="badge">Хит продаж</span>{% endif %}
-        <h1>{{ build.name }}</h1>
-        <div class="detail-price">{{ build.price }} BYN</div>
-
-        <dl class="detail-specs">
-            <dt>Процессор</dt>
-            <dd>{{ build.cpu }} ({{ build.get_cpu_brand_display }})</dd>
-            <dt>Видеокарта</dt>
-            <dd>{{ build.gpu }}</dd>
-            <dt>Оперативная память</dt>
-            <dd>{{ build.ram }}</dd>
-            <dt>Накопитель</dt>
-            <dd>{{ build.storage }}</dd>
-            <dt>Корпус</dt>
-            <dd>{{ build.case }}</dd>
-            <dt>Категория</dt>
-            <dd>{{ build.get_category_display }}</dd>
-        </dl>
-
-        <p class="detail-desc">{{ build.description }}</p>
-
+    <div class="detail-body">
         <div class="order-form-box" id="order">
             <h2>Заказать эту сборку</h2>
             <div class="form-error" id="order-form-error"></div>
@@ -47,7 +55,6 @@
             <form id="build-order-form" action="{% url 'submit_order' %}" method="post">
                 {% csrf_token %}
                 <input type="hidden" name="build" value="{{ build.pk }}">
-                <input type="hidden" name="comment" value="{{ build.name }}">
                 <div class="form-group">
                     <label for="order-name">Ваше имя</label>
                     <input type="text" id="order-name" name="name" required placeholder="Иван">
@@ -57,22 +64,8 @@
                     <input type="text" id="order-contact" name="contact" required placeholder="+375... или @username">
                 </div>
                 <div class="form-group">
-                    <label for="order-budget">Бюджет</label>
-                    <select id="order-budget" name="budget" required>
-                        <option value="up_to_500">До 500$</option>
-                        <option value="500_800" selected>500–800$</option>
-                        <option value="800_1200">800–1200$</option>
-                        <option value="1200_plus">1200$+</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="order-purpose">Цель</label>
-                    <select id="order-purpose" name="purpose" required>
-                        <option value="games">Игры</option>
-                        <option value="work">Работа</option>
-                        <option value="study">Учёба</option>
-                        <option value="all" selected>Всё сразу</option>
-                    </select>
+                    <label for="order-build">Сборка</label>
+                    <input type="text" id="order-build" class="form-control-readonly" value="{{ build.name }}" data-initial-value="{{ build.name }}" readonly tabindex="-1" aria-readonly="true">
                 </div>
                 <button type="submit" class="btn btn-primary" style="width:100%;">Отправить заявку</button>
             </form>

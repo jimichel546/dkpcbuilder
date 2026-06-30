@@ -105,6 +105,9 @@
                     successEl.textContent = successMessage;
                     successEl.style.display = 'block';
                     form.reset();
+                    form.querySelectorAll('[data-initial-value]').forEach(function (field) {
+                        field.value = field.dataset.initialValue;
+                    });
                 } else {
                     const errors = result.data.errors;
                     let msg = 'Ошибка отправки.';

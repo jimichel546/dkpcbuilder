@@ -13,6 +13,25 @@ class OrderForm(forms.ModelForm):
         }
 
 
+class BuildOrderForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['name', 'contact', 'build']
+        widgets = {
+            'build': forms.HiddenInput(),
+        }
+
+    def save(self, commit=True):
+        order = super().save(commit=False)
+        order.budget = '500_800'
+        order.purpose = 'all'
+        if order.build:
+            order.comment = f'Заказ сборки: {order.build.name}'
+        if commit:
+            order.save()
+        return order
+
+
 class ContactForm(forms.ModelForm):
     class Meta:
         model = Order

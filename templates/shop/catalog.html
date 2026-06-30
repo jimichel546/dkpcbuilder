@@ -38,7 +38,7 @@
                     <span>GPU: {{ build.gpu }}</span>
                     <span>RAM: {{ build.ram }}</span>
                 </div>
-                <div class="build-price">{{ build.price }} BYN</div>
+                <div class="build-price">От {{ build.price }} BYN</div>
                 <div class="build-card-actions">
                     <a href="{% url 'build_detail' build.slug %}" class="btn btn-outline btn-sm">Подробнее</a>
                     <a href="{% url 'index' %}?build={{ build.slug }}#quiz" class="btn btn-primary btn-sm">Заказать</a>

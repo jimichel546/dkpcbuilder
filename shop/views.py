@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 
-from .forms import ContactForm, OrderForm
+from .forms import BuildOrderForm, ContactForm, OrderForm
 from .models import Build, GalleryPhoto, Order, Review
 from .seo import absolute_media_url
 
@@ -40,14 +40,21 @@ def send_telegram_notification(order: Order) -> bool:
         return False
 
     build_name = order.build.name if order.build else 'Не выбрана'
-    text = (
-        f'🖥 Новая заявка на сборку ПК\n\n'
-        f'👤 Имя: {order.name}\n'
-        f'📞 Контакт: {order.contact}\n'
-        f'💰 Бюджет: {order.get_budget_display()}\n'
-        f'🎯 Цель: {order.get_purpose_display()}\n'
-        f'📦 Сборка: {build_name}\n'
-    )
+    if order.build:
+        text = (
+            f'🖥 Заявка на сборку «{build_name}»\n\n'
+            f'👤 Имя: {order.name}\n'
+            f'📞 Контакт: {order.contact}\n'
+        )
+    else:
+        text = (
+            f'🖥 Новая заявка на сборку ПК\n\n'
+            f'👤 Имя: {order.name}\n'
+            f'📞 Контакт: {order.contact}\n'
+            f'💰 Бюджет: {order.get_budget_display()}\n'
+            f'🎯 Цель: {order.get_purpose_display()}\n'
+            f'📦 Сборка: {build_name}\n'
+        )
     if order.comment:
         text += f'\n💬 Комментарий:\n{order.comment}'
 
@@ -74,6 +81,14 @@ def _is_ajax(request):
         or content_type == 'application/json'
         or content_type.startswith('application/json')
     )
+
+
+def _order_form_class(data):
+    if data.get('build'):
+        return BuildOrderForm
+    if 'budget' in data or 'purpose' in data:
+        return OrderForm
+    return ContactForm
 
 
 @ensure_csrf_cookie
@@ -127,7 +142,7 @@ def submit_order(request):
         except json.JSONDecodeError:
             return JsonResponse({'status': 'error', 'errors': {'__all__': ['Неверный JSON']}}, status=400)
 
-        form_class = ContactForm if 'budget' not in data and 'purpose' not in data else OrderForm
+        form_class = _order_form_class(data)
         form = form_class(data)
         if form.is_valid():
             order = form.save()
@@ -135,7 +150,7 @@ def submit_order(request):
             return JsonResponse({'status': 'ok'})
         return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
 
-    form_class = ContactForm if 'budget' not in request.POST and 'purpose' not in request.POST else OrderForm
+    form_class = _order_form_class(request.POST)
     form = form_class(request.POST)
     if form.is_valid():
         order = form.save()
